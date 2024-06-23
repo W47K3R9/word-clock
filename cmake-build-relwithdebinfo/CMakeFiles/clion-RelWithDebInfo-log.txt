@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/Lucas/Software_Projects/word-clock -B /Users/Lucas/Software_Projects/word-clock/cmake-build-relwithdebinfo
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "CodeBlocks - Unix Makefiles" -S /Users/Lucas/Software_Projects/word-clock -B /Users/Lucas/Software_Projects/word-clock/cmake-build-relwithdebinfo
 CMake Error at CMakeLists.txt:2 (include):
   include could not find requested file:
 

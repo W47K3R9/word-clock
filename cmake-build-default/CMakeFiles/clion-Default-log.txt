@@ -1,4 +1,4 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/Lucas/Software_Projects/word-clock -B /Users/Lucas/Software_Projects/word-clock/cmake-build-default
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -G "CodeBlocks - Unix Makefiles" -S /Users/Lucas/Software_Projects/word-clock -B /Users/Lucas/Software_Projects/word-clock/cmake-build-default
 CMake Error at CMakeLists.txt:2 (include):
   include could not find requested file:
 
