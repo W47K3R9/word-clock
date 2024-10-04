@@ -47,6 +47,9 @@
 #define UHR     0b111     << 4
 // clang-format on
 
+/// @brief bits for one column / row / minute combination to be displayed
+#define QLOCK_WORD_LENGTH 25
+
 void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_to_write);
 
 #endif // TIME_TRANSLATION_H
