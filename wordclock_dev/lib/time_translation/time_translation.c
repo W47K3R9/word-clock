@@ -14,7 +14,6 @@ void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_
     {
         t_rows_to_write[row] = 0;
     }
-    t_rows_to_write[0] |= QLOCK_ROW_0 | ES_IST;
     switch (t_minute)
     {
     case 0:
@@ -22,6 +21,7 @@ void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_
     case 2:
     case 3:
     case 4:
+        t_rows_to_write[0] |= QLOCK_ROW_0 | ES_IST;
         t_rows_to_write[9] |= QLOCK_ROW_9 | UHR;
         break;
     case 5:
@@ -70,6 +70,7 @@ void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_
     case 32:
     case 33:
     case 34:
+        t_rows_to_write[0] |= QLOCK_ROW_0 | ES_IST;
         t_rows_to_write[4] |= QLOCK_ROW_4 | HALB;
         break;
     case 35:

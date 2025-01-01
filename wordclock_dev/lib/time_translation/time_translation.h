@@ -26,25 +26,25 @@
 
 /// @brief variable for the qlock words to be displayed (horizontal positions of corresponding LED's)
 // clang-format off
-#define ES_IST  0b110111  << 9
-#define EINS    0b1111    << 11
-#define ZWEI    0b1111    << 4
-#define DREI    0b1111    << 11
-#define VIER    0b1111    << 4
-#define FUENF   0b1111    << 4
-#define SECHS   0b11111   << 10
-#define SIEBEN  0b111111  << 9
-#define ACHT    0b1111    << 4
-#define NEUN    0b1111    << 9
-#define ZEHN    0b1111    << 11
-#define ELF     0b111     << 7
-#define ZWOELF  0b11111   << 4
-#define ZWANZIG 0b1111111 << 4
-#define VIERTEL 0b1111111 << 4
-#define HALB    0b1111    << 11
-#define VOR     0b111     << 12
-#define NACH    0b1111    << 4
-#define UHR     0b111     << 4
+#define ES_IST  0b00100011111 << 4
+#define EINS    0b00001111111 << 4
+#define ZWEI    0b11111110000 << 4
+#define DREI    0b00001111111 << 4
+#define VIER    0b11111110000 << 4
+#define FUENF   0b11111110000 << 4
+#define SECHS   0b00000111111 << 4
+#define SIEBEN  0b00000011111 << 4
+#define ACHT    0b11111110000 << 4
+#define NEUN    0b11100001111 << 4
+#define ZEHN    0b00001111111 << 4
+#define ELF     0b11111000111 << 4
+#define ZWOELF  0b11111100000 << 4
+#define ZWANZIG 0b11110000000 << 4
+#define VIERTEL 0b11110000000 << 4
+#define HALB    0b00001111111 << 4
+#define VOR     0b00011111111 << 4
+#define NACH    0b11111110000 << 4
+#define UHR     0b11111111000 << 4
 // clang-format on
 
 /// @brief bits for one column / row / minute combination to be displayed

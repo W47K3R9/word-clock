@@ -42,12 +42,12 @@ void app_main()
     /// doesn't affect anything).
     esp_task_wdt_config_t deactivate_watchdog = {.timeout_ms = UINT32_MAX, .idle_core_mask = 0b11, .trigger_panic = 0};
     esp_err_t return_check = esp_task_wdt_init(&deactivate_watchdog);
-    assert(return_check == ESP_OK);
+    // assert(return_check == ESP_OK);
     return_check = nvs_flash_init();
-    assert(return_check == ESP_OK);
+    // assert(return_check == ESP_OK);
 
-    // connect_to_station();
-    // set_system_time();
+    connect_to_station();
+    set_system_time();
     setup_pins_to_main_shift_register();
 
     /*
@@ -60,25 +60,27 @@ void app_main()
      */
     // clang-format off
     uint32_t test_pattern[MAX_ROWS] = {
-        0b00000001000010100000000000000000,
+        0x1001100,
         0, 0, 0, 0,
-        0b00000000100101010000000000000000,
+        0x807800,
         0, 0, 0, 0};
+
+    uint32_t leds_to_turn_on[MAX_ROWS];
     // clang-format on
+    // translate_time_to_led_positions(17, 0, test_pattern);
     xTaskCreatePinnedToCore(display_time, "Time representation on word clock", 1024, (void*)test_pattern, 1, NULL, 1);
     while (1)
     {
-        uint32_t ticks_per_us = esp_rom_get_cpu_ticks_per_us();
-        uint32_t clock_freq = clk_hal_cpu_get_freq_hz();
-        printf("Ticks per µs: %ld, Frequency of system: %ld\n", ticks_per_us, clock_freq);
+        // uint32_t ticks_per_us = esp_rom_get_cpu_ticks_per_us();
+        // uint32_t clock_freq = clk_hal_cpu_get_freq_hz();
+        // printf("Ticks per µs: %ld, Frequency of system: %ld\n", ticks_per_us, clock_freq);
         esp_task_wdt_reconfigure(&deactivate_watchdog);
-        // uint32_t leds_to_turn_on[MAX_ROWS];
-        // int hour_and_minute[2];
-        // char date_time_buffer[100];
+        int hour_and_minute[2];
+        char date_time_buffer[100];
         vTaskDelay(1000 / portTICK_PERIOD_MS);
-        // /// @todo hour_and_minute should be replaced by some kind of struct.
-        // get_current_time(date_time_buffer, sizeof(date_time_buffer), hour_and_minute);
-        // translate_time_to_led_positions(hour_and_minute[0], hour_and_minute[1], leds_to_turn_on);
+        /// @todo hour_and_minute should be replaced by some kind of struct.
+        get_current_time(date_time_buffer, sizeof(date_time_buffer), hour_and_minute);
+        translate_time_to_led_positions(hour_and_minute[0], hour_and_minute[1], leds_to_turn_on);
         // for (uint8_t pos = 0; pos < MAX_ROWS; ++pos)
         // {
         //     printf("Row %d: ", pos);
