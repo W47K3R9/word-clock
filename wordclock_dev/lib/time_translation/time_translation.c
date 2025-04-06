@@ -8,6 +8,46 @@
 
 #include "time_translation.h"
 
+/// @brief variables to determine the qlock row which will sequentially be turned on.
+static const uint32_t QLOCK_ROW_0 = 1 << 24;
+static const uint32_t QLOCK_ROW_1 = 1 << 23;
+static const uint32_t QLOCK_ROW_2 = 1 << 22;
+static const uint32_t QLOCK_ROW_3 = 1 << 21;
+static const uint32_t QLOCK_ROW_4 = 1 << 20;
+static const uint32_t QLOCK_ROW_5 = 1 << 19;
+static const uint32_t QLOCK_ROW_6 = 1 << 18;
+static const uint32_t QLOCK_ROW_7 = 1 << 17;
+static const uint32_t QLOCK_ROW_8 = 1 << 16;
+static const uint32_t QLOCK_ROW_9 = 1 << 15;
+static const uint32_t MAX_ROWS = 10;
+
+/// @brief variable for the qlock words to be displayed (horizontal positions of corresponding LED's)
+// clang-format off
+static const uint32_t MASK = 0x7FF0
+static const uint32_t ES_IST  = ~(0b00100011111 << 4) & MASK;
+static const uint32_t EINS    = ~(0b00001111111 << 4) & MASK;
+static const uint32_t ZWEI    = ~(0b11111110000 << 4) & MASK;
+static const uint32_t DREI    = ~(0b00001111111 << 4) & MASK;
+static const uint32_t VIER    = ~(0b11111110000 << 4) & MASK;
+static const uint32_t FUENF   = ~(0b11111110000 << 4) & MASK;
+static const uint32_t SECHS   = ~(0b00000111111 << 4) & MASK;
+static const uint32_t SIEBEN  = ~(0b00000011111 << 4) & MASK;
+static const uint32_t ACHT    = ~(0b11111110000 << 4) & MASK;
+static const uint32_t NEUN    = ~(0b11100001111 << 4) & MASK;
+static const uint32_t ZEHN    = ~(0b00001111111 << 4) & MASK;
+static const uint32_t ELF     = ~(0b11111000111 << 4) & MASK;
+static const uint32_t ZWOELF  = ~(0b11111100000 << 4) & MASK;
+static const uint32_t ZWANZIG = ~(0b11110000000 << 4) & MASK;
+static const uint32_t VIERTEL = ~(0b11110000000 << 4) & MASK;
+static const uint32_t HALB    = ~(0b00001111111 << 4) & MASK;
+static const uint32_t VOR     = ~(0b00011111111 << 4) & MASK;
+static const uint32_t NACH    = ~(0b11111110000 << 4) & MASK;
+static const uint32_t UHR     = ~(0b11111111000 << 4) & MASK;
+// clang-format on
+
+/// @brief bits for one column / row / minute combination to be displayed
+#define QLOCK_WORD_LENGTH 25
+
 void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_to_write)
 {
     for (uint8_t row = 0; row < MAX_ROWS; ++row)
