@@ -8,8 +8,10 @@
 #ifndef TIME_SERVER_CONNECTION_H
 #define TIME_SERVER_CONNECTION_H
 #include <stddef.h>
+#include "time_translation.h"
 
-void get_current_time(char* date_time, size_t buffer_size, int* t_min_and_hour);
+void get_current_time_with_description(char* date_time, size_t buffer_size, HourAndMinute* hour_minute);
+void get_current_time(HourAndMinute* hour_minute);
 
 void set_system_time();
 

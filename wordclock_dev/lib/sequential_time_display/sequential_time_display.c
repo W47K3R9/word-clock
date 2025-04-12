@@ -46,7 +46,7 @@ void setup_pins_to_main_shift_register()
         .pin_bit_mask =
             1ULL << load_register_clk | 1ULL << shift_register_clk | 1ULL << clear_reagister | 1ULL << serial_input_pin,
         .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE,
     };
@@ -64,17 +64,17 @@ void setup_pins_to_main_shift_register()
     esp_rom_delay_us(1);
 }
 
-static void delay_for_n_ns(uint32_t t_delay_in_ns)
-{
-    /// @note the system states around 160 ticks that are being used per microsecond, so the finest resolution
-    /// is about 6.25 ns per operation.
-    double ticks_to_wait = t_delay_in_ns / 6.25;
-    for(uint32_t tick_count = 0; tick_count < ticks_to_wait; ++tick_count);
-}
-
+// static void delay_for_n_ns(uint32_t t_delay_in_ns)
+// {
+//     /// @note the system states around 160 ticks that are being used per microsecond, so the finest resolution
+//     /// is about 6.25 ns per operation.
+//     double ticks_to_wait = t_delay_in_ns / 6.25;
+//     for(uint32_t tick_count = 0; tick_count < ticks_to_wait; ++tick_count);
+// }
+//
 static void delay_for_200_ns()
 {
-    /// @note with a tick time of 6.25 ns waiting 32 ticks is equivalent to waiting for 400 ns.
+    /// @note with a tick time of 6.25 ns waiting 32 ticks is equivalent to waiting for 200 ns.
     for(uint8_t tick_count = 0; tick_count < 32; ++tick_count);
 }
 
@@ -85,11 +85,11 @@ void display_time(void* t_rows_to_display)
     /// posible on it's own core so that NO PREEMPTION causes the timing to be interrupted.
     /// I know this implementation is quite fragile but it's only a hobby project so come on, don't be that mean!
     uint32_t* rows_to_display = t_rows_to_display;
-    for (size_t row_index = 0; row_index < MAX_ROWS;)
+    for (size_t row_index = 0; row_index < WORD_CLOCK_MAX_ROWS;)
     {
         gpio_set_level(load_register_clk, 0);
         // loading stage takes about approx. 25 * 0.4 µs = 10 µs
-        for (size_t bit_position = 0; bit_position < QLOCK_WORD_LENGTH; ++bit_position)
+        for (size_t bit_position = 0; bit_position < WORD_CLOCK_WORD_LENGTH; ++bit_position)
         {
             gpio_set_level(shift_register_clk, 0);
             gpio_set_level(serial_input_pin, rows_to_display[row_index] >> bit_position & 1);
@@ -97,8 +97,8 @@ void display_time(void* t_rows_to_display)
             gpio_set_level(shift_register_clk, 1);
             delay_for_200_ns();
         }
-        gpio_set_level(load_register_clk, 1);
         esp_rom_delay_us(10);
-        row_index = (row_index != MAX_ROWS - 1) ? row_index + 1 : 0;
+        gpio_set_level(load_register_clk, 1);
+        row_index = (row_index != WORD_CLOCK_MAX_ROWS - 1) ? row_index + 1 : 0;
     }
 }

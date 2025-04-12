@@ -1,8 +1,8 @@
 /**
  * Author: Lucas Scheidt
  * Date: 29.09.24
- * 
- * Description: 
+ *
+ * Description:
  *
  */
 
@@ -12,15 +12,26 @@
 
 static void time_sync_notification_cb(struct timeval* /* tv */) { printf("[INFO] synchronizing to time server!\n"); }
 
-void get_current_time(char* date_time, size_t buffer_size, int* t_min_and_hour)
+static struct tm create_current_time_struct_and_set_time(HourAndMinute* hour_minute)
 {
     time_t now;
     struct tm time_spec;
     time(&now);
     localtime_r(&now, &time_spec);
-    t_min_and_hour[0] = time_spec.tm_hour;
-    t_min_and_hour[1] = time_spec.tm_min;
+    hour_minute->hour = (uint8_t)time_spec.tm_hour;
+    hour_minute->minute = (uint8_t)time_spec.tm_min;
+    return time_spec;
+}
+
+void get_current_time_with_description(char* date_time, size_t buffer_size, HourAndMinute* hour_minute)
+{
+    struct tm time_spec = create_current_time_struct_and_set_time(hour_minute);
     strftime(date_time, buffer_size, "%c", &time_spec);
+}
+
+void get_current_time(HourAndMinute* hour_minute)
+{
+    create_current_time_struct_and_set_time(hour_minute);
 }
 
 static void initialize_sntp(void)
@@ -36,8 +47,8 @@ static void initialize_sntp(void)
 void set_system_time()
 {
     initialize_sntp();
-    const int max_retries = 10;
-    int retry_count = 0;
+    const uint8_t max_retries = 12;
+    uint8_t retry_count = 0;
     while (sntp_get_sync_status() == SNTP_SYNC_STATUS_RESET && ++retry_count < max_retries)
     {
         printf("[INFO] waiting for system time to be set, (%d/%d) retries...\n", retry_count, max_retries);

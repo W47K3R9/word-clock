@@ -11,7 +11,18 @@
 
 #include "stdint.h"
 
-void translate_time_to_led_positions(int t_hour, int t_minute, uint32_t* t_rows_to_write);
+/// @brief Horizontal rows of the word clock.
+#define WORD_CLOCK_MAX_ROWS 10
+/// @brief 25 Bits need to be written for a word.
+#define WORD_CLOCK_WORD_LENGTH 25
+
+typedef struct HourAndMinute
+{
+  uint8_t hour;
+  uint8_t minute;
+} HourAndMinute;
+
+void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t* t_rows_to_write);
 
 #endif // TIME_TRANSLATION_H
 
