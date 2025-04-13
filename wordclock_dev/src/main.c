@@ -32,7 +32,7 @@ void app_main()
     // for whatever reason the assertions fail, but since the board works... it's not an error if you ignore it.
     esp_err_t return_check = esp_task_wdt_init(&deactivate_watchdog);
     // invalid state means already initialized, so that would be ok
-    assert (return_check == ESP_OK | return_check == ESP_ERR_INVALID_STATE);
+    assert (return_check == ESP_OK || return_check == ESP_ERR_INVALID_STATE);
     return_check = nvs_flash_init();
     assert (return_check == ESP_OK);
 
