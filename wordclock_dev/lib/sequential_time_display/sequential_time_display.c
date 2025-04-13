@@ -53,15 +53,13 @@ void setup_pins_to_main_shift_register()
     esp_err_t check_result = gpio_config(&shift_reg_config);
     assert(check_result == ESP_OK);
     // init transmission delays are only for safety (clear register is low active)
+    gpio_set_level(serial_input_pin, 0);
     esp_rom_delay_us(1);
     gpio_set_level(clear_reagister, 0);
     esp_rom_delay_us(1);
     gpio_set_level(clear_reagister, 1);
     esp_rom_delay_us(1);
     gpio_set_level(load_register_clk, 0);
-    esp_rom_delay_us(1);
-    gpio_set_level(serial_input_pin, 0);
-    esp_rom_delay_us(1);
 }
 
 // static void delay_for_n_ns(uint32_t t_delay_in_ns)
@@ -97,8 +95,8 @@ void display_time(void* t_rows_to_display)
             gpio_set_level(shift_register_clk, 1);
             delay_for_200_ns();
         }
-        esp_rom_delay_us(10);
         gpio_set_level(load_register_clk, 1);
+        esp_rom_delay_us(10);
         row_index = (row_index != WORD_CLOCK_MAX_ROWS - 1) ? row_index + 1 : 0;
     }
 }
