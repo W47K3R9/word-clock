@@ -33,15 +33,15 @@
 #include <time_translation.h>
 
 // @formatter:off
-static const gpio_num_t serial_input_pin   = GPIO_NUM_1;
-static const gpio_num_t output_enable      = GPIO_NUM_2; // LOW active
-static const gpio_num_t load_register_clk  = GPIO_NUM_4;
-static const gpio_num_t shift_register_clk = GPIO_NUM_5;
-static const gpio_num_t clear_register     = GPIO_NUM_6; // clears at LOW
-static const gpio_num_t user_led           = GPIO_NUM_21;
+static const gpio_num_t SERIAL_INPUT_PIN   = GPIO_NUM_1;
+static const gpio_num_t OUTPUT_ENABLE      = GPIO_NUM_2; // LOW active
+static const gpio_num_t LOAD_REGISTER_CLK  = GPIO_NUM_4;
+static const gpio_num_t SHIFT_REGISTER_CLK = GPIO_NUM_5;
+static const gpio_num_t CLEAR_REGISTER     = GPIO_NUM_6; // clears at LOW
+static const gpio_num_t USER_LED           = GPIO_NUM_21;
 
 // after writing the value into the shift register, another six shifts need to happen to put the value to the end.
-static const uint8_t shift_to_end_diff = 31 - WORD_CLOCK_WORD_LENGTH;
+static const uint8_t SHIFT_STEPS_TO_CORRECT_POSITION = 31 - WORD_CLOCK_WORD_LENGTH;
 // @formatter:on
 
 void setup_pins_to_main_shift_register()
@@ -50,8 +50,8 @@ void setup_pins_to_main_shift_register()
     ///    as you'd expect they would by regularly setting the direction with the respective call.
     const gpio_config_t shift_reg_config = {
         .pin_bit_mask =
-        1ULL << load_register_clk | 1ULL << shift_register_clk | 1ULL << clear_register | 1ULL << serial_input_pin |
-        1ULL << output_enable | 1ULL << user_led,
+        1ULL << LOAD_REGISTER_CLK | 1ULL << SHIFT_REGISTER_CLK | 1ULL << CLEAR_REGISTER | 1ULL << SERIAL_INPUT_PIN |
+        1ULL << OUTPUT_ENABLE | 1ULL << USER_LED,
         .mode = GPIO_MODE_OUTPUT,
         .pull_up_en = GPIO_PULLUP_DISABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
@@ -60,22 +60,23 @@ void setup_pins_to_main_shift_register()
     const esp_err_t check_result = gpio_config(&shift_reg_config);
     assert(check_result == ESP_OK);
     // init transmission delays are only for safety (clear register is low active)
-    gpio_set_level(output_enable, 0);
-    gpio_set_level(user_led, 0);
-    gpio_set_level(serial_input_pin, 0);
+    gpio_set_level(OUTPUT_ENABLE, 0);
+    gpio_set_level(USER_LED, 0);
+    gpio_set_level(SERIAL_INPUT_PIN, 0);
     esp_rom_delay_us(1);
-    gpio_set_level(clear_register, 0);
+    gpio_set_level(CLEAR_REGISTER, 0);
     esp_rom_delay_us(1);
-    gpio_set_level(load_register_clk, 1);
+    gpio_set_level(LOAD_REGISTER_CLK, 1);
     esp_rom_delay_us(1);
-    gpio_set_level(clear_register, 1);
-    gpio_set_level(load_register_clk, 0);
-    gpio_set_level(output_enable, 1);
+    gpio_set_level(CLEAR_REGISTER, 1);
+    gpio_set_level(LOAD_REGISTER_CLK, 0);
+    gpio_set_level(OUTPUT_ENABLE, 1);
 }
 
 void activate_screen()
 {
-    gpio_set_level(output_enable, 0);
+    gpio_set_level(OUTPUT_ENABLE, 0);
+    esp_rom_delay_us(1);
 }
 
 
@@ -92,17 +93,17 @@ __attribute__((used)) static void delay_for_screen_rate()
 static void load_value()
 {
     delay_for_screen_rate();
-    gpio_set_level(shift_register_clk, 1);
+    gpio_set_level(SHIFT_REGISTER_CLK, 1);
     delay_for_screen_rate();
-    gpio_set_level(shift_register_clk, 0);
+    gpio_set_level(SHIFT_REGISTER_CLK, 0);
 }
 
 static void shift_to_end()
 {
     // needed in order to get the LSB to the correct position in the shift register.
-    for (size_t bit_position = 0; bit_position < shift_to_end_diff; ++bit_position)
+    for (size_t bit_position = 0; bit_position < SHIFT_STEPS_TO_CORRECT_POSITION; ++bit_position)
     {
-        gpio_set_level(serial_input_pin, 1);
+        gpio_set_level(SERIAL_INPUT_PIN, 1);
         load_value();
     }
 }
@@ -120,16 +121,16 @@ void display_time(void* t_rows_to_display)
         for (size_t bit_position = 0; bit_position < WORD_CLOCK_WORD_LENGTH; ++bit_position)
         {
             // setup-time SER before SRCLK (HI): 25 ns @ 4.5 V
-            gpio_set_level(serial_input_pin, rows_to_display[row_index] >> bit_position & 1);
+            gpio_set_level(SERIAL_INPUT_PIN, rows_to_display[row_index] >> bit_position & 1);
             load_value();
         }
         shift_to_end();
         // shift to end stage takes about approx. 6 * 0.325 µs = 1.950 µs
         // whole shift operation delay: 8.125 µs + 1.950 µs = 10.075 µs
-        gpio_set_level(load_register_clk, 1);
-        esp_rom_delay_us(5);
-        gpio_set_level(load_register_clk, 0);
-        esp_rom_delay_us(5);
+        gpio_set_level(LOAD_REGISTER_CLK, 1);
+        esp_rom_delay_us(1);
+        gpio_set_level(LOAD_REGISTER_CLK, 0);
+        esp_rom_delay_us(9);
         row_index = (row_index != WORD_CLOCK_MAX_ROWS - 1) ? row_index + 1 : 0;
     }
 }

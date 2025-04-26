@@ -23,9 +23,9 @@ static struct tm create_current_time_struct_and_set_time(HourAndMinute* hour_min
     return time_spec;
 }
 
-void get_current_time_with_description(char* date_time, size_t buffer_size, HourAndMinute* hour_minute)
+void get_current_time_with_description(char* date_time, const size_t buffer_size, HourAndMinute* hour_minute)
 {
-    struct tm time_spec = create_current_time_struct_and_set_time(hour_minute);
+    const struct tm time_spec = create_current_time_struct_and_set_time(hour_minute);
     strftime(date_time, buffer_size, "%c", &time_spec);
 }
 

@@ -6,7 +6,6 @@
 #include "esp_system.h"
 #include "esp_task_wdt.h"
 #include "nvs_flash.h"
-#include "hal/clk_tree_hal.h"
 
 #include "sequential_time_display.h"
 #include "time_server_connection.h"
@@ -28,7 +27,8 @@ void app_main()
     assert(return_check == ESP_OK);
 
     // main board config
-    /// @todo think about whether it's necessary to implement some kind of errorhandling...
+    /// @todo think about whether it's necessary to implement some kind of errorhandling.
+    /// That way also the endless loop could be interrupted if some error occurs.
     setup_pins_to_main_shift_register();
     connect_to_station();
     set_system_time();
@@ -43,6 +43,7 @@ void app_main()
     const gpio_num_t user_led = GPIO_NUM_21;
     uint8_t toggle = 0;
     activate_screen();
+    // ReSharper disable once CppDFAEndlessLoop
     while (1)
     {
         gpio_set_level(user_led, toggle);
@@ -56,7 +57,7 @@ void app_main()
         // only to be safe that the bits only get displayed after masking etc.
         memcpy(leds_to_turn_on, set_correct_bits_array, sizeof(leds_to_turn_on));
 
-        ///@note this is for debugging purposes.
+        /// @note this is for debugging purposes.
         // for (uint8_t pos = 0; pos < WORD_CLOCK_MAX_ROWS; ++pos)
         // {
         //     printf("Row %d: ", pos);
