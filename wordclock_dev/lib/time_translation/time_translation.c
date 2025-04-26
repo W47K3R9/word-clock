@@ -9,7 +9,7 @@
 #include "time_translation.h"
 #include <assert.h>
 
-/// @brief variables to determine the qlock row which will sequentially be turned on.
+/// @brief variables to determine the clock row which will sequentially be turned on.
 static const uint32_t WORD_CLOCK_ROW_0 = 1 << 24;
 static const uint32_t WORD_CLOCK_ROW_1 = 1 << 23;
 static const uint32_t WORD_CLOCK_ROW_2 = 1 << 22;
@@ -21,7 +21,7 @@ static const uint32_t WORD_CLOCK_ROW_7 = 1 << 17;
 static const uint32_t WORD_CLOCK_ROW_8 = 1 << 16;
 static const uint32_t WORD_CLOCK_ROW_9 = 1 << 15;
 
-/// @brief variable for the qlock words to be displayed (horizontal positions of corresponding LED's)
+/// @brief variable for the clock words to be displayed (horizontal positions of corresponding LED's)
 // clang-format off
 // format:
 //   n.a.  |     row     |    column   | min
@@ -33,6 +33,7 @@ static const uint32_t ROW_MASK = 0x1FF8000;
 static const uint32_t SHOW_ES_IST     = 0b11011100000 << 4;
 static const uint32_t SHOW_FIRST_FOUR = 0b11110000000 << 4;
 static const uint32_t SHOW_LAST_FOUR  = 0b00000001111 << 4;
+static const uint32_t SHOW_TEST       = 0b00000011111 << 4;
 static const uint32_t SHOW_SECHS      = 0b11111000000 << 4;
 static const uint32_t SHOW_SIEBEN     = 0b11111100000 << 4;
 static const uint32_t SHOW_NEUN       = 0b00011110000 << 4;
@@ -55,7 +56,7 @@ void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t*
 {
     const uint8_t hour = hour_minute->hour;
     const uint8_t minute = hour_minute->minute;
-    assert(hour < 25);
+    assert(hour < 24);
     assert(minute < 60);
     for (uint8_t row = 0; row < WORD_CLOCK_MAX_ROWS; ++row)
     {
@@ -194,7 +195,7 @@ void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t*
             break;
         case 5:
         case 17:
-            t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_LAST_FOUR;
+            t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_TEST;
             break;
         case 6:
         case 18:
@@ -246,7 +247,7 @@ void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t*
             break;
         case 4:
         case 16:
-            t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_LAST_FOUR;
+            t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_TEST;
             break;
         case 5:
         case 17:
