@@ -12,6 +12,6 @@ void setup_pins_to_main_shift_register();
 
 void activate_screen();
 
-void display_time(void *t_rows_to_display);
+void display_time(void* t_rows_to_display);
 
 #endif
