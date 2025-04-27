@@ -17,9 +17,8 @@ void app_main()
 {
     /// @note ugly but necessary for tests with a blocking endless main loop (even if it's on a seperate core and
     /// doesn't affect anything).
-    esp_task_wdt_config_t deactivate_watchdog = {.timeout_ms = UINT32_MAX, .idle_core_mask = 0b11, .trigger_panic = 0};
+    const esp_task_wdt_config_t deactivate_watchdog = {.timeout_ms = UINT32_MAX, .idle_core_mask = 0b11, .trigger_panic = 0};
 
-    // for whatever reason the assertions fail, but since the board works... it's not an error if you ignore it.
     esp_err_t return_check = esp_task_wdt_init(&deactivate_watchdog);
     // invalid state means already initialized, so that would be ok
     assert(return_check == ESP_OK || return_check == ESP_ERR_INVALID_STATE);
@@ -32,7 +31,7 @@ void app_main()
     setup_pins_to_main_shift_register();
     connect_to_station();
     set_system_time();
-    uint32_t leds_to_turn_on[WORD_CLOCK_MAX_ROWS];
+    uint32_t leds_to_turn_on[WORD_CLOCK_MAX_ROWS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     xTaskCreatePinnedToCore(display_time,
                             "Time representation on word clock",
                             1024,
