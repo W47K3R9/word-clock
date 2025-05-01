@@ -5,12 +5,16 @@
 void uint32_to_binary(const uint32_t number)
 {
     // 25 bits are enough.
-    for (int i = 31; i >= 0; --i)
+    for (int i = 25; i >= 0; --i)
     {
-        printf("%ld", (number >> i) & 1);
+        printf("%u", (number >> i) & 1);
         if (i % 4 == 0)
         {
             printf(" ");
+        }
+        if (i == 4 || i == 15)
+        {
+            printf("|");
         }
     }
     printf("\n");

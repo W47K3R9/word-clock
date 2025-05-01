@@ -46,6 +46,7 @@ static const uint32_t TWO_MINUTES   = 0b0100 | WORD_CLOCK_ROW_1;
 static const uint32_t THREE_MINUTES = 0b0010 | WORD_CLOCK_ROW_8;
 static const uint32_t FOUR_MINUTES  = 0b0001 | WORD_CLOCK_ROW_9;
 
+static const uint32_t EIN_UHR_MASK = ~(1 << 11);
 // @formatter:on
 
 void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t* t_rows_to_write)
@@ -59,112 +60,7 @@ void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t*
         t_rows_to_write[row] = 0;
     }
 
-    // minutes
-    switch (minute)
-    {
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ES_IST;
-        t_rows_to_write[9] |= WORD_CLOCK_ROW_9 | SHOW_UHR;
-        break;
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        break;
-    case 10:
-    case 11:
-    case 12:
-    case 13:
-    case 14:
-        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        break;
-    case 15:
-    case 16:
-    case 17:
-    case 18:
-    case 19:
-        t_rows_to_write[2] |= WORD_CLOCK_ROW_2 | SHOW_LAST_SEVEN;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        break;
-    case 20:
-    case 21:
-    case 22:
-    case 23:
-    case 24:
-        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_LAST_SEVEN;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        break;
-    case 25:
-    case 26:
-    case 27:
-    case 28:
-    case 29:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
-        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
-        break;
-    case 30:
-    case 31:
-    case 32:
-    case 33:
-    case 34:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ES_IST;
-        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
-        break;
-    case 35:
-    case 36:
-    case 37:
-    case 38:
-    case 39:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
-        break;
-    case 40:
-    case 41:
-    case 42:
-    case 43:
-    case 44:
-        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
-        break;
-    case 45:
-    case 46:
-    case 47:
-    case 48:
-    case 49:
-        t_rows_to_write[2] |= WORD_CLOCK_ROW_2 | SHOW_LAST_SEVEN;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
-        break;
-    case 50:
-    case 51:
-    case 52:
-    case 53:
-    case 54:
-        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
-        break;
-    case 55:
-    case 56:
-    case 57:
-    case 58:
-    case 59:
-        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
-        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
-        break;
-    default:
-        break;
-    }
-
+    // hours
     if (minute < 25)
     {
         switch (hour)
@@ -277,6 +173,119 @@ void translate_time_to_led_positions(const HourAndMinute* hour_minute, uint32_t*
             break;
         }
     }
+
+    // 5 minute steps
+    switch (minute)
+    {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        // special case for 01 (and 13) o'clock, "ES IST EINS UHR" sounds kinda stupid.
+        if (hour == 13 || hour == 1)
+        {
+            t_rows_to_write[5] &= EIN_UHR_MASK;
+        }
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ES_IST;
+        t_rows_to_write[9] |= WORD_CLOCK_ROW_9 | SHOW_UHR;
+        break;
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+    case 9:
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        break;
+    case 10:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        break;
+    case 15:
+    case 16:
+    case 17:
+    case 18:
+    case 19:
+        t_rows_to_write[2] |= WORD_CLOCK_ROW_2 | SHOW_LAST_SEVEN;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        break;
+    case 20:
+    case 21:
+    case 22:
+    case 23:
+    case 24:
+        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_LAST_SEVEN;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        break;
+    case 25:
+    case 26:
+    case 27:
+    case 28:
+    case 29:
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
+        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
+        break;
+    case 30:
+    case 31:
+    case 32:
+    case 33:
+    case 34:
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ES_IST;
+        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
+        break;
+    case 35:
+    case 36:
+    case 37:
+    case 38:
+    case 39:
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
+        break;
+    case 40:
+    case 41:
+    case 42:
+    case 43:
+    case 44:
+        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[4] |= WORD_CLOCK_ROW_4 | SHOW_EINS_DREI_ZEHN_HALB;
+        break;
+    case 45:
+    case 46:
+    case 47:
+    case 48:
+    case 49:
+        t_rows_to_write[2] |= WORD_CLOCK_ROW_2 | SHOW_LAST_SEVEN;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
+        break;
+    case 50:
+    case 51:
+    case 52:
+    case 53:
+    case 54:
+        t_rows_to_write[1] |= WORD_CLOCK_ROW_1 | SHOW_EINS_DREI_ZEHN_HALB;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
+        break;
+    case 55:
+    case 56:
+    case 57:
+    case 58:
+    case 59:
+        t_rows_to_write[0] |= WORD_CLOCK_ROW_0 | SHOW_ZWEI_VIER_FUENF_ACHT_NACH;
+        t_rows_to_write[3] |= WORD_CLOCK_ROW_3 | SHOW_VOR;
+        break;
+    default:
+        break;
+    }
+
+    // minute cycle
     switch (minute % 5)
     {
     case 1:
