@@ -59,6 +59,7 @@ void set_system_time()
         printf("[ERROR] couldn't connect after %d retries, exiting application!\n", max_retries);
         exit(-2);
     }
-    setenv("TZ", "UTC-02:00", 1);
+    const int overwrite_env_variable = 1;
+    setenv("TZ", "UTC-02:00", overwrite_env_variable);
     tzset();
 }
