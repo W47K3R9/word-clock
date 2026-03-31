@@ -16,6 +16,7 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "wifi_connection.h"
+#include "webserver.h"
 #include "constants.h"
 
 static void wifi_event_handler(void* /* event_handler_arg */, esp_event_base_t /* event_base */, int32_t event_id,
