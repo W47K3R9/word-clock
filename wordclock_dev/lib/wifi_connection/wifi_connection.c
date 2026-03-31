@@ -19,10 +19,11 @@
 #include "webserver.h"
 #include "constants.h"
 
+
+static unsigned char RETRY_NUM = 0;
 static void wifi_event_handler(void* /* event_handler_arg */, esp_event_base_t /* event_base */, int32_t event_id,
                                void* /* event_data */)
 {
-    unsigned char retry_num = 0;
     switch (event_id)
     {
     case WIFI_EVENT_STA_START:
@@ -33,15 +34,18 @@ static void wifi_event_handler(void* /* event_handler_arg */, esp_event_base_t /
         break;
     case WIFI_EVENT_STA_DISCONNECTED:
         printf("[WARNING] Wi-Fi lost connection!\n");
-        if (retry_num < 5)
+        if (RETRY_NUM < 5)
         {
             esp_wifi_connect();
-            retry_num++;
+            RETRY_NUM++;
             printf("[INFO] retrying to connect...\n");
         }
         break;
     case IP_EVENT_STA_GOT_IP:
         printf("[INFO] Wi-Fi got IP...\n");
+        // theoretically returns an httpd_handle_t that I won't use since this is a simple project and I don't give a
+        // shit
+        register_uri_handlers();
         break;
     default:
         printf("[ERROR] no valid event_id recognized!\n");

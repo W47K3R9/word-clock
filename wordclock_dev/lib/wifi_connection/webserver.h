@@ -7,7 +7,8 @@
 
 #ifndef WEBSERVER_H
 #define WEBSERVER_H
+#include <esp_http_server.h>
 
-void register_uri_handlers(httpd_handle_t server);
+httpd_handle_t register_uri_handlers();
 
 #endif // WEBSERVER_H
